@@ -1,12 +1,13 @@
 package io.wollinger.cutils.commands
 
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 interface Interactable {
-    fun getCommandData(): CommandData
+    fun getCommandData(): CommandData?
 }
 
 interface SlashCommand: Interactable {
@@ -22,4 +23,9 @@ interface ContextUserCommand: Interactable {
 interface ContextMessageCommand: Interactable {
     val name: String
     fun run(event: MessageContextInteractionEvent)
+}
+
+interface ModalInteractionCommand: Interactable {
+    val id: String
+    fun run(event: ModalInteractionEvent)
 }

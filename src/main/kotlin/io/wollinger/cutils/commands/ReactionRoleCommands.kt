@@ -1,57 +1,43 @@
 package io.wollinger.cutils.commands
 
+import io.wollinger.cutils.utils.MessageUtils
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
+import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.interactions.components.text.TextInput
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
-import net.dv8tion.jda.api.interactions.modals.Modal
-
-private val templateEmojis = listOf(":rat:", ":smile:", ":apple:", ":thinking_face:")
-
-private fun getModal(message: String?, channel: String): Modal {
-    val modal = Modal.create("roleemoji-modal", ReactionRoleCommandContext.name)
-    val channelID = TextInput.create("channel", "Channel id", TextInputStyle.SHORT).also {
-        it.value = channel
-    }.build()
-    val messageID = TextInput.create("message", "Message id", TextInputStyle.SHORT).also {
-        it.value = message
-    }.build()
-    val emojiInput = TextInput.create("emoji", "Emoji", TextInputStyle.SHORT).also {
-        it.placeholder = templateEmojis[(templateEmojis.indices).random()]
-        it.setRequiredRange(2, 32)
-    }.build()
-    modal.addActionRow(channelID)
-    modal.addActionRow(messageID)
-    modal.addActionRow(emojiInput)
-    return modal.build()
-}
-
-object ReactionRoleCommandContext: ContextMessageCommand {
-    override val name = "Add role emoji"
-
-    override fun run(event: MessageContextInteractionEvent) {
-        event.replyModal(getModal(event.target.id, event.target.channel.id)).queue()
-    }
-
-    override fun getCommandData() = Commands.context(Command.Type.MESSAGE, name).also {
-        it.isGuildOnly = true
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
-    }
-}
 
 object ReactionRoleCommandSlash: SlashCommand {
     override val label = "rr"
 
     override fun run(event: SlashCommandInteractionEvent) {
-        event.replyModal(getModal(null, event.channel.id)).queue()
+        val messageID = event.getOption("message-id")!!.asString
+        val emoji = Emoji.fromFormatted(event.getOption("emoji")!!.asString)
+        val role = event.getOption("role")!!.asRole
+
+        if(messageID.toLongOrNull() == null) {
+            event.reply("Bad id!").setEphemeral(true).queue()
+            return
+        }
+
+        MessageUtils.findMessage(event.guild!!, messageID, {
+            it.addReaction(emoji).queue({
+                event.reply("Done!").setEphemeral(true).queue()
+                //TODO: Add emoji to database
+            }, {
+                event.reply("Could not add emoji. (Bad emoji?)").setEphemeral(true).queue()
+            })
+        }, {
+            event.reply("Message not found.").setEphemeral(true).queue()
+        })
     }
 
     override fun getCommandData() = Commands.slash(label, "Add a role reaction").also {
         it.isGuildOnly = true
         it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.addOption(OptionType.STRING, "message-id", "Message to add to", true)
+        it.addOption(OptionType.STRING, "emoji", "Emoji to use", true)
+        it.addOption(OptionType.ROLE, "role", "Role to add", true)
     }
 }

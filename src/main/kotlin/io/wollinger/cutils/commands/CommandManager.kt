@@ -1,6 +1,7 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.CutilsBot
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -12,14 +13,16 @@ object CommandManager: ListenerAdapter() {
         it[InfoCommandSlash.label] = InfoCommandSlash
         it[InfoCommandContext.name] = InfoCommandContext
         it[AvatarCommandContext.name] = AvatarCommandContext
-        it[ReactionRoleCommandContext.name] = ReactionRoleCommandContext
         it[ReactionRoleCommandSlash.label] = ReactionRoleCommandSlash
         it[SayCommand.label] = SayCommand
     }
 
     fun register() {
         ArrayList<CommandData>().also {
-            commands.forEach { (_, cmd) -> it.add(cmd.getCommandData()) }
+            commands.forEach { (_, cmd) ->
+                val cmdData = cmd.getCommandData()
+                if(cmdData != null) it.add(cmdData)
+            }
             CutilsBot.jda.updateCommands().addCommands(it).complete()
         }
     }
@@ -27,4 +30,5 @@ object CommandManager: ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (commands[event.name] as SlashCommand).run(event)
     override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(event)
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(event)
+    override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(event)
 }
