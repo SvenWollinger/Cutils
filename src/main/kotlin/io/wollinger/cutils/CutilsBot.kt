@@ -51,6 +51,7 @@ object CutilsBot {
         //Init Servers
         jda.guilds.forEach { servers[it.id] = Server(it) }
 
+        //Init Command Manager
         CommandManager.register()
     }
 }
