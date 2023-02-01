@@ -28,6 +28,7 @@ object CutilsBot: ListenerAdapter() {
     private val interactables = HashMap<String, Interactable>().also {
         it[InfoCommandSlash.label] = InfoCommandSlash
         it[InfoCommandContext.name] = InfoCommandContext
+        it[AvatarCommandContext.name] = AvatarCommandContext
     }
 
     init {
