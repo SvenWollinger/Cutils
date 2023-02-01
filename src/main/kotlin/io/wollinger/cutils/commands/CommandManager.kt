@@ -14,6 +14,7 @@ object CommandManager: ListenerAdapter() {
         it[AvatarCommandContext.name] = AvatarCommandContext
         it[RoleEmojiContext.name] = RoleEmojiContext
         it[RoleEmojiSlash.label] = RoleEmojiSlash
+        it[SayCommand.label] = SayCommand
     }
 
     fun register() {
