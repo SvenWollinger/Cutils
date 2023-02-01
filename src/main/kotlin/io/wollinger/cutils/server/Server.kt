@@ -1,4 +1,4 @@
-package io.wollinger.cutils
+package io.wollinger.cutils.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.dv8tion.jda.api.entities.Guild
