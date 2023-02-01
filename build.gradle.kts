@@ -40,7 +40,7 @@ tasks.create("run", JavaExec::class) {
 tasks.withType<Jar> {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     archiveFileName.set(archiveName)
-    manifest { attributes["Main-Class"] = "io.wollinger.cutils.MainKt" }
+    manifest { attributes["Main-Class"] = "io.wollinger.cutils.CutilsBotKt" }
     dependsOn(configurations.runtimeClasspath)
     from(sourceSets.main.get().output)
     from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })

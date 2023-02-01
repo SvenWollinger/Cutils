@@ -1,6 +1,6 @@
 package io.wollinger.cutils.commands
 
-import io.wollinger.cutils.TimestampType
+import io.wollinger.cutils.utils.TimestampType
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent

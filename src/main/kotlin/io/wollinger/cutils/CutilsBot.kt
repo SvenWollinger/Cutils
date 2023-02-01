@@ -54,3 +54,8 @@ object CutilsBot {
 }
 
 fun log(msg: Any) = println(msg)
+
+fun main() {
+    //This causes the object to be created
+    CutilsBot
+}
