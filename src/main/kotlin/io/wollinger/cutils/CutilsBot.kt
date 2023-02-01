@@ -20,16 +20,10 @@ data class BotConfig(
     var playing: String = ""
 )
 
-object CutilsBot: ListenerAdapter() {
+object CutilsBot {
     private val config: BotConfig
     private val servers = HashMap<String, Server>()
-    private val jda: JDA
-
-    private val interactables = HashMap<String, Interactable>().also {
-        it[InfoCommandSlash.label] = InfoCommandSlash
-        it[InfoCommandContext.name] = InfoCommandContext
-        it[AvatarCommandContext.name] = AvatarCommandContext
-    }
+    val jda: JDA
 
     init {
         File("config.json").also {
@@ -48,7 +42,7 @@ object CutilsBot: ListenerAdapter() {
             it.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE)
             it.enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_PRESENCES)
             it.setBulkDeleteSplittingEnabled(false)
-            it.addEventListeners(this)
+            it.addEventListeners(CommandManager)
             if(config.playing.isNotEmpty()) it.setActivity(Activity.playing(config.playing))
         }.build()
         jda.awaitReady()
@@ -57,15 +51,8 @@ object CutilsBot: ListenerAdapter() {
         //Init Servers
         jda.guilds.forEach { servers[it.id] = Server(it) }
 
-        //Create slash commands
-        ArrayList<CommandData>().also {
-            interactables.forEach { (_, cmd) -> it.add(cmd.getCommandData()) }
-            jda.updateCommands().addCommands(it).complete()
-        }
+        CommandManager.register()
     }
-
-    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (interactables[event.name] as SlashCommand).run(event)
-    override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (interactables[event.name] as ContextUserCommand).run(event)
 }
 
 fun log(msg: Any) = println(msg)

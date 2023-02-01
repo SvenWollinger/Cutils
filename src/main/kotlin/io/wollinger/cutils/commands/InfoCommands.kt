@@ -48,9 +48,7 @@ object InfoCommandSlash: SlashCommand {
 object InfoCommandContext: ContextUserCommand {
     override val name = "Get User info"
 
-    override fun run(event: UserContextInteractionEvent) {
-        event.reply(getInfoMessage(event.targetMember!!)).queue()
-    }
+    override fun run(event: UserContextInteractionEvent) = event.reply(getInfoMessage(event.targetMember!!)).queue()
 
     override fun getCommandData() = Commands.context(Command.Type.USER, name).also {
         it.isGuildOnly = true
