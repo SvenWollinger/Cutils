@@ -1,5 +1,6 @@
 package io.wollinger.cutils.commands
 
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -16,4 +17,9 @@ interface SlashCommand: Interactable {
 interface ContextUserCommand: Interactable {
     val name: String
     fun run(event: UserContextInteractionEvent)
+}
+
+interface ContextMessageCommand: Interactable {
+    val name: String
+    fun run(event: MessageContextInteractionEvent)
 }

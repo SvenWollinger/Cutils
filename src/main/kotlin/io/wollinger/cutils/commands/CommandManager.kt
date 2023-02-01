@@ -1,6 +1,7 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.CutilsBot
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -11,6 +12,8 @@ object CommandManager: ListenerAdapter() {
         it[InfoCommandSlash.label] = InfoCommandSlash
         it[InfoCommandContext.name] = InfoCommandContext
         it[AvatarCommandContext.name] = AvatarCommandContext
+        it[RoleEmojiContext.name] = RoleEmojiContext
+        it[RoleEmojiSlash.label] = RoleEmojiSlash
     }
 
     fun register() {
@@ -22,4 +25,5 @@ object CommandManager: ListenerAdapter() {
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (commands[event.name] as SlashCommand).run(event)
     override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(event)
+    override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(event)
 }
