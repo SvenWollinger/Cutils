@@ -12,8 +12,8 @@ object CommandManager: ListenerAdapter() {
         it[InfoCommandSlash.label] = InfoCommandSlash
         it[InfoCommandContext.name] = InfoCommandContext
         it[AvatarCommandContext.name] = AvatarCommandContext
-        it[RoleEmojiContext.name] = RoleEmojiContext
-        it[RoleEmojiSlash.label] = RoleEmojiSlash
+        it[ReactionRoleCommandContext.name] = ReactionRoleCommandContext
+        it[ReactionRoleCommandSlash.label] = ReactionRoleCommandSlash
         it[SayCommand.label] = SayCommand
     }
 

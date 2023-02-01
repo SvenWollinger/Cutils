@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 private val templateEmojis = listOf(":rat:", ":smile:", ":apple:", ":thinking_face:")
 
 private fun getModal(message: String?, channel: String): Modal {
-    val modal = Modal.create("roleemoji-modal", RoleEmojiContext.name)
+    val modal = Modal.create("roleemoji-modal", ReactionRoleCommandContext.name)
     val channelID = TextInput.create("channel", "Channel id", TextInputStyle.SHORT).also {
         it.value = channel
     }.build()
@@ -30,7 +30,7 @@ private fun getModal(message: String?, channel: String): Modal {
     return modal.build()
 }
 
-object RoleEmojiContext: ContextMessageCommand {
+object ReactionRoleCommandContext: ContextMessageCommand {
     override val name = "Add role emoji"
 
     override fun run(event: MessageContextInteractionEvent) {
@@ -43,7 +43,7 @@ object RoleEmojiContext: ContextMessageCommand {
     }
 }
 
-object RoleEmojiSlash: SlashCommand {
+object ReactionRoleCommandSlash: SlashCommand {
     override val label = "rr"
 
     override fun run(event: SlashCommandInteractionEvent) {
