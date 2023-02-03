@@ -51,6 +51,8 @@ object CutilsBot {
         //Init Command Manager
         CommandManager.register()
     }
+
+    val id: String get() = jda.selfUser.id
 }
 
 fun log(msg: Any) = println(msg)

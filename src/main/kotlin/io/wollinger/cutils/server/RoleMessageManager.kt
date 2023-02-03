@@ -4,14 +4,20 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 
 data class RoleMessageDTO(
-    var messageID: String,
-    var r: ArrayList<RoleMessageItemDTO>
+    val messageID: String,
+    val reactions: ArrayList<RoleMessageReactionDTO> = ArrayList(),
+    val buttons: ArrayList<RoleMessageButtonDTO> = ArrayList()
 )
 
-data class RoleMessageItemDTO(
-    var type: Type,
-    var content: String
-) { enum class Type { REACTION, BUTTON } }
+data class RoleMessageReactionDTO(
+    val emoji: String,
+    val roleID: String
+)
+
+data class RoleMessageButtonDTO(
+    val text: String,
+    val roleID: String
+)
 
 class RoleMessageManager(server: Server) {
     private val messages = HashMap<String, RoleMessageDTO>()
@@ -19,7 +25,13 @@ class RoleMessageManager(server: Server) {
 
     init {
         folder.mkdirs()
+        load()
     }
+
+    private fun getRoleMessageDTO(messageID: String) = messages[messageID] ?: RoleMessageDTO(messageID).also { messages[messageID] = it }
+
+    fun addButton(messageID: String, text: String, roleID: String) = getRoleMessageDTO(messageID).buttons.add(RoleMessageButtonDTO(text, roleID))
+    fun addReaction(messageID: String, emoji: String, roleID: String) = getRoleMessageDTO(messageID).reactions.add(RoleMessageReactionDTO(emoji, roleID))
 
     fun save() {
         messages.forEach { (id, rm) ->
