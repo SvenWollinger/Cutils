@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
-import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageEditData
@@ -17,24 +16,27 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData
 object ButtonRoleCommandSlash: SlashCommand {
     override val label = "br"
 
+    //TODO: For buttons, we technically dont need to save the role seperately. What do??
     override fun run(event: SlashCommandInteractionEvent) {
         val messageID = event.getOption("message-id")!!.asString
         val text = event.getOption("text")!!.asString
         val role = event.getOption("role")!!.asRole
 
+        fun reply(msg: String) = event.reply(msg).setEphemeral(true).queue()
+
         if(text.length > Button.LABEL_MAX_LENGTH) {
-            event.reply("Text too long!").setEphemeral(true).queue()
+            reply("Text too long!")
             return
         }
 
         if(messageID.toLongOrNull() == null) {
-            event.reply("Bad id!").setEphemeral(true).queue()
+            reply("Bad id!")
             return
         }
 
         MessageUtils.findMessage(event.guild!!, messageID, { message ->
             if(message.author.id != CutilsBot.id) {
-                event.reply("Message must be sent by me!").setEphemeral(true).queue()
+                reply("Message must be sent by me!")
                 return@findMessage
             }
 
@@ -43,30 +45,27 @@ object ButtonRoleCommandSlash: SlashCommand {
             message.actionRows.forEach { row ->
                 row.forEach { item ->
                     items.add(item)
-                    if(item is Button) {
-                        if(item.id == buttonID) {
-                            event.reply("Button already exists with that role!").setEphemeral(true).queue()
-                            return@findMessage
-                        }
+                    if(item is Button && item.id == buttonID) {
+                        reply("Button already exists with that role!")
+                        return@findMessage
                     }
                 }
             }
 
             if(items.size >= Message.MAX_COMPONENT_COUNT) {
-                event.reply("Maximum number of buttons reached.").setEphemeral(true).queue()
+                reply("Maximum number of buttons reached.")
                 return@findMessage
             }
 
             items.add(Button.primary(buttonID, text))
 
             message.editMessage(MessageEditData.fromMessage(message)).setActionRow(items).queue({
-                event.reply("Button added.").setEphemeral(true).queue()
+                reply("Button added.")
             }, { t ->
-                println()
-                event.reply("Button could not be added. ${t.message}").setEphemeral(true).queue()
+                reply("Button could not be added. ${t.message}")
             })
         }, {
-            event.reply("Message not found.").setEphemeral(true).queue()
+            reply("Message not found.")
         })
     }
 
