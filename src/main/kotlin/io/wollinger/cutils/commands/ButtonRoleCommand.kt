@@ -8,18 +8,25 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageEditData
+import java.util.concurrent.CopyOnWriteArrayList
 
 object ButtonRoleCommandSlash: SlashCommand {
-    override val label = "br"
+    override val label = "buttonrole"
 
-    //TODO: For buttons, we technically dont need to save the role seperately. What do??
-    override fun run(event: SlashCommandInteractionEvent) {
+    private fun toButtonID(roleID: String) = "cutils-buttonrole-$roleID"
+    private fun toRoleID(buttonID: String) = buttonID.split("-")[2]
+
+    private fun add(event: SlashCommandInteractionEvent) {
         val messageID = event.getOption("message-id")!!.asString
-        val text = event.getOption("text")!!.asString
         val role = event.getOption("role")!!.asRole
+        val text = event.getOption("text")?.asString ?: role.name
 
         fun reply(msg: String) = event.reply(msg).setEphemeral(true).queue()
 
@@ -39,11 +46,11 @@ object ButtonRoleCommandSlash: SlashCommand {
                 return@findMessage
             }
 
-            val buttonID = "cutils-br-$role"
+            val buttonID = toButtonID(role.id)
             val items = ArrayList<ItemComponent>()
             message.actionRows.forEach { row ->
                 row.forEach { item ->
-                    items.add(item)
+                    if(item is Button) items.add(item)
                     if(item is Button && item.id == buttonID) {
                         reply("Button already exists with that role!")
                         return@findMessage
@@ -68,11 +75,57 @@ object ButtonRoleCommandSlash: SlashCommand {
         })
     }
 
+    private fun remove(event: SlashCommandInteractionEvent) {
+        val messageID = event.getOption("message-id")!!.asString
+        val roleID = event.getOption("role-id")!!.asString
+
+        MessageUtils.findMessage(event.guild!!, messageID, { message ->
+            val components = CopyOnWriteArrayList<LayoutComponent>()
+            message.components.forEach { components.add(it) }
+
+            components.forEach { component ->
+                if(component is ActionRow) {
+                    val buttons = CopyOnWriteArrayList(component.components)
+                    buttons.forEach { btn ->
+                        if(btn is Button && roleID == toRoleID(btn.id!!)) {
+                            buttons.remove(btn)
+                            components.remove(component)
+                            if(buttons.isNotEmpty()) components.add(ActionRow.of(buttons))
+                            message.editMessageComponents(components).queue()
+                            event.reply("Button removed!").setEphemeral(true).queue()
+                            return@findMessage
+                        }
+                    }
+                }
+            }
+            event.reply("Button with that role not found.").setEphemeral(true).queue()
+        }, {
+            event.reply("Message not found.").setEphemeral(true).queue()
+        })
+    }
+
+    override fun run(event: SlashCommandInteractionEvent) {
+        when(event.subcommandName) {
+            "add" -> add(event)
+            "remove" -> remove(event)
+        }
+    }
+
     override fun getCommandData() = Commands.slash(label, "Add a role button").also {
         it.isGuildOnly = true
         it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
-        it.addOption(OptionType.STRING, "message-id", "Message to add to", true)
-        it.addOption(OptionType.STRING, "text", "Button text", true)
-        it.addOption(OptionType.ROLE, "role", "Role to add", true)
+
+        it.addSubcommands(
+            SubcommandData.fromData(OptionData(OptionType.STRING, "add", "Add a role button", true).toData())
+                .addOption(OptionType.STRING, "message-id", "Message to add to", true)
+                .addOption(OptionType.ROLE, "role", "Role to add", true)
+                .addOption(OptionType.STRING, "text", "Button text", false)
+        )
+
+        it.addSubcommands(
+            SubcommandData.fromData(OptionData(OptionType.STRING, "remove", "Remove a role button", true).toData())
+                .addOption(OptionType.STRING, "message-id", "Message ID", true)
+                .addOption(OptionType.STRING, "role-id", "ID of Role to remove", true)
+        )
     }
 }
