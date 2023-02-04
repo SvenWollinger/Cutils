@@ -11,13 +11,13 @@ data class ServerConfig(
 class Server(val guild: Guild) {
     private val id = guild.id
     private val config: ServerConfig
-    private val rmm: RoleMessageManager
+    private val rmm: ReactionRoleManager
     val serverFolder = File("servers/$id/")
 
     init {
         println("Init server $id")
         serverFolder.mkdirs()
-        rmm = RoleMessageManager(this)
+        rmm = ReactionRoleManager(this)
         File(serverFolder, "config.json").also {
             config = if(it.exists()) ObjectMapper().readValue(it, ServerConfig::class.java) else ServerConfig()
             ObjectMapper().writeValue(it, config)

@@ -3,35 +3,28 @@ package io.wollinger.cutils.server
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 
-data class RoleMessageDTO(
+data class ReactionMessageDTO(
     val messageID: String,
-    val reactions: ArrayList<RoleMessageReactionDTO> = ArrayList(),
-    val buttons: ArrayList<RoleMessageButtonDTO> = ArrayList()
+    val reactions: ArrayList<ReactionRoleDTO> = ArrayList(),
 )
 
-data class RoleMessageReactionDTO(
+data class ReactionRoleDTO(
     val emoji: String,
     val roleID: String
 )
 
-data class RoleMessageButtonDTO(
-    val text: String,
-    val roleID: String
-)
-
-class RoleMessageManager(server: Server) {
-    private val messages = HashMap<String, RoleMessageDTO>()
-    private val folder = File(server.serverFolder, "rolemessages")
+class ReactionRoleManager(server: Server) {
+    private val messages = HashMap<String, ReactionMessageDTO>()
+    private val folder = File(server.serverFolder, "reactionroles")
 
     init {
         folder.mkdirs()
         load()
     }
 
-    private fun getRoleMessageDTO(messageID: String) = messages[messageID] ?: RoleMessageDTO(messageID).also { messages[messageID] = it }
+    private fun getReactionMessage(messageID: String) = messages[messageID] ?: ReactionMessageDTO(messageID).also { messages[messageID] = it }
 
-    fun addButton(messageID: String, text: String, roleID: String) = getRoleMessageDTO(messageID).buttons.add(RoleMessageButtonDTO(text, roleID))
-    fun addReaction(messageID: String, emoji: String, roleID: String) = getRoleMessageDTO(messageID).reactions.add(RoleMessageReactionDTO(emoji, roleID))
+    fun addReaction(messageID: String, emoji: String, roleID: String) = getReactionMessage(messageID).reactions.add(ReactionRoleDTO(emoji, roleID))
 
     fun save() {
         messages.forEach { (id, rm) ->
@@ -41,7 +34,7 @@ class RoleMessageManager(server: Server) {
 
     fun load() {
         folder.listFiles()?.forEach {
-            val dto = jacksonObjectMapper().readValue(it, RoleMessageDTO::class.java)
+            val dto = jacksonObjectMapper().readValue(it, ReactionMessageDTO::class.java)
             messages[dto.messageID] = dto
         }
     }
