@@ -50,10 +50,12 @@ object ButtonRoleCommandSlash: SlashCommand {
             val items = ArrayList<ItemComponent>()
             message.actionRows.forEach { row ->
                 row.forEach { item ->
-                    if(item is Button) items.add(item)
-                    if(item is Button && item.id == buttonID) {
-                        reply("Button already exists with that role!")
-                        return@findMessage
+                    if(item is Button) {
+                        items.add(item)
+                        if(item.id == buttonID) {
+                            reply("Button already exists with that role!")
+                            return@findMessage
+                        }
                     }
                 }
             }
