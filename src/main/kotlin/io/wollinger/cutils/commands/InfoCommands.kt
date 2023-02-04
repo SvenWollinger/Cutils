@@ -1,6 +1,7 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.utils.TimestampType
+import io.wollinger.cutils.utils.UserUtils
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -14,11 +15,13 @@ private fun getInfoMessage(member: Member): String {
         User info:
         ID: ${member.id}
         Current username: ${member.user.name}#${member.user.discriminator} (as of ${f.formatNow()})
+        Nickname: ${member.nickname ?: "No nickname"}
         Mention: ${member.asMention}
         Account created: ${f.format(member.timeCreated)}
         Time joined: ${f.format(member.timeJoined)}
-        Time boosted: ${member.timeBoosted.let { if(it == null) "-" else f.format(it) }}
-        Avatar url: <${member.effectiveAvatarUrl}?size=1024>
+        Time boosted: ${member.timeBoosted.let { if(it == null) "Not boosting" else f.format(it) }}
+        Server avatar url: ${UserUtils.getServerAvatarURL(member) ?: "Not set"}
+        Avatar url: ${UserUtils.getAvatarURL(member.user)}
     """.trimIndent()
 }
 
