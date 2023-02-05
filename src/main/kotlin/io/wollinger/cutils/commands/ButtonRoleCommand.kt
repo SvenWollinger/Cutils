@@ -81,26 +81,9 @@ object ButtonRoleCommandSlash: SlashCommand {
         val messageID = event.getOption("message-id")!!.asString
         val roleID = event.getOption("role-id")!!.asString
 
-        MessageUtils.findMessage(event.guild!!, messageID, { message ->
-            val components = CopyOnWriteArrayList<LayoutComponent>()
-            message.components.forEach { components.add(it) }
-
-            components.forEach { component ->
-                if(component is ActionRow) {
-                    val buttons = CopyOnWriteArrayList(component.components)
-                    buttons.forEach { btn ->
-                        if(btn is Button && roleID == toRoleID(btn.id!!)) {
-                            buttons.remove(btn)
-                            components.remove(component)
-                            if(buttons.isNotEmpty()) components.add(ActionRow.of(buttons))
-                            message.editMessageComponents(components).queue()
-                            event.reply("Button removed!").setEphemeral(true).queue()
-                            return@findMessage
-                        }
-                    }
-                }
-            }
-            event.reply("Button with that role not found.").setEphemeral(true).queue()
+        MessageUtils.findMessage(event.guild!!, messageID, {
+            val response = if(MessageUtils.removeButton(it, toButtonID(roleID))) "Button removed!" else "Button with that role not found."
+            event.reply(response).setEphemeral(true).queue()
         }, {
             event.reply("Message not found.").setEphemeral(true).queue()
         })
