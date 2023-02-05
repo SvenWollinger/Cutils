@@ -2,6 +2,7 @@ package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.CutilsBot
 import io.wollinger.cutils.utils.MessageUtils
+import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -10,12 +11,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
-import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.ItemComponent
-import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageEditData
-import java.util.concurrent.CopyOnWriteArrayList
 
 object ButtonRoleCommandSlash: SlashCommand {
     override val label = "buttonrole"
@@ -28,21 +26,19 @@ object ButtonRoleCommandSlash: SlashCommand {
         val role = event.getOption("role")!!.asRole
         val text = event.getOption("text")?.asString ?: role.name
 
-        fun reply(msg: String) = event.reply(msg).setEphemeral(true).queue()
-
         if(text.length > Button.LABEL_MAX_LENGTH) {
-            reply("Text too long!")
+            event.queueReply("Text too long!", true)
             return
         }
 
         if(messageID.toLongOrNull() == null) {
-            reply("Bad id!")
+            event.queueReply("Bad id!", true)
             return
         }
 
         MessageUtils.findMessage(event.guild!!, messageID, { message ->
             if(message.author.id != CutilsBot.id) {
-                reply("Message must be sent by me!")
+                event.queueReply("Message must be sent by me!", true)
                 return@findMessage
             }
 
@@ -53,7 +49,7 @@ object ButtonRoleCommandSlash: SlashCommand {
                     if(item is Button) {
                         items.add(item)
                         if(item.id == buttonID) {
-                            reply("Button already exists with that role!")
+                            event.queueReply("Button already exists with that role!", true)
                             return@findMessage
                         }
                     }
@@ -61,19 +57,19 @@ object ButtonRoleCommandSlash: SlashCommand {
             }
 
             if(items.size >= Message.MAX_COMPONENT_COUNT) {
-                reply("Maximum number of buttons reached.")
+                event.queueReply("Maximum number of buttons reached.", true)
                 return@findMessage
             }
 
             items.add(Button.primary(buttonID, text))
 
             message.editMessage(MessageEditData.fromMessage(message)).setActionRow(items).queue({
-                reply("Button added.")
+                event.queueReply("Button added.", true)
             }, { t ->
-                reply("Button could not be added. ${t.message}")
+                event.queueReply("Button could not be added. ${t.message}", true)
             })
         }, {
-            reply("Message not found.")
+            event.queueReply("Message not found.", true)
         })
     }
 
@@ -82,10 +78,13 @@ object ButtonRoleCommandSlash: SlashCommand {
         val roleID = event.getOption("role-id")!!.asString
 
         MessageUtils.findMessage(event.guild!!, messageID, {
-            val response = if(MessageUtils.removeButton(it, toButtonID(roleID))) "Button removed!" else "Button with that role not found."
-            event.reply(response).setEphemeral(true).queue()
+            MessageUtils.removeButton(it, toButtonID(roleID), {
+                event.queueReply("Button removed!", true)
+            }, {
+                event.queueReply("Button with that role not found.", true)
+            })
         }, {
-            event.reply("Message not found.").setEphemeral(true).queue()
+            event.queueReply("Message not found.", true)
         })
     }
 

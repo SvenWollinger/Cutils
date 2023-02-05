@@ -3,6 +3,7 @@ package io.wollinger.cutils.utils
 import io.wollinger.cutils.commands.ButtonRoleCommandSlash
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -26,7 +27,7 @@ object MessageUtils {
         }
     }
 
-    fun removeButton(message: Message, buttonID: String): Boolean {
+    fun removeButton(message: Message, buttonID: String, onSuccess: () -> (Unit), onFailure: () -> (Unit)) {
         val components = CopyOnWriteArrayList<LayoutComponent>()
         message.components.forEach { components.add(it) }
 
@@ -39,11 +40,14 @@ object MessageUtils {
                         components.remove(component)
                         if(buttons.isNotEmpty()) components.add(ActionRow.of(buttons))
                         message.editMessageComponents(components).queue()
-                        return true
+                        onSuccess.invoke()
+                        return
                     }
                 }
             }
         }
-        return false
+        onFailure.invoke()
     }
 }
+
+fun SlashCommandInteractionEvent.queueReply(message: String, ephemeral: Boolean = false) = reply(message).setEphemeral(ephemeral).queue()
