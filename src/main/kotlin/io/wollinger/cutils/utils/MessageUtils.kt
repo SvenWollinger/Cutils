@@ -3,6 +3,7 @@ package io.wollinger.cutils.utils
 import io.wollinger.cutils.commands.ButtonRoleCommandSlash
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -53,3 +54,4 @@ object MessageUtils {
 
 fun SlashCommandInteractionEvent.queueReply(message: String, ephemeral: Boolean = false) = reply(message).setEphemeral(ephemeral).queue()
 fun UserContextInteractionEvent.queueReply(message: String, ephemeral: Boolean = false) = reply(message).setEphemeral(ephemeral).queue()
+fun MessageContextInteractionEvent.queueReply(message: String, ephemeral: Boolean = false) = reply(message).setEphemeral(ephemeral).queue()

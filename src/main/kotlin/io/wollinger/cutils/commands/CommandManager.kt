@@ -17,6 +17,7 @@ object CommandManager: ListenerAdapter() {
         it[ButtonRoleCommandSlash.label] = ButtonRoleCommandSlash
         it[SayCommand.label] = SayCommand
         it[ButtonEditCommandSlash.label] = ButtonEditCommandSlash
+        it[GetMessageIDCommandContext.name] = GetMessageIDCommandContext
     }
 
     fun register() {
