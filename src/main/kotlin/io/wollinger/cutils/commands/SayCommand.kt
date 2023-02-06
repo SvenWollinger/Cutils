@@ -1,5 +1,6 @@
 package io.wollinger.cutils.commands
 
+import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -11,7 +12,7 @@ object SayCommand: SlashCommand {
 
     override fun run(event: SlashCommandInteractionEvent) {
         event.channel.sendMessage(event.getOption("text")!!.asString).queue()
-        event.reply("Sent!").setEphemeral(true).queue()
+        event.queueReply("Sent!", true)
     }
 
     override fun getCommandData() = Commands.slash(label, "Say something as the bot").also {

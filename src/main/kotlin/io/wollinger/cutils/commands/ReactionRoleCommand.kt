@@ -1,6 +1,7 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.utils.MessageUtils
+import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -17,19 +18,19 @@ object ReactionRoleCommandSlash: SlashCommand {
         val role = event.getOption("role")!!.asRole
 
         if(messageID.toLongOrNull() == null) {
-            event.reply("Bad id!").setEphemeral(true).queue()
+            event.queueReply("Bad id!", true)
             return
         }
 
         MessageUtils.findMessage(event.guild!!, messageID, {
             it.addReaction(emoji).queue({
-                event.reply("Done!").setEphemeral(true).queue()
+                event.queueReply("Done!", true)
                 //TODO: Add emoji to database
             }, {
-                event.reply("Could not add emoji. (Bad emoji?)").setEphemeral(true).queue()
+                event.queueReply("Could not add emoji. (Bad emoji?)", true)
             })
         }, {
-            event.reply("Message not found.").setEphemeral(true).queue()
+            event.queueReply("Message not found.", true)
         })
     }
 
