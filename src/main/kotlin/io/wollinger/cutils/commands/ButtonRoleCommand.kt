@@ -97,7 +97,7 @@ object ButtonRoleCommandSlash: SlashCommand {
 
     override fun getCommandData() = Commands.slash(label, "Add a role button").also {
         it.isGuildOnly = true
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.adminOnly()
 
         it.addSubcommands(
             SubcommandData.fromData(OptionData(OptionType.STRING, "add", "Add a role button", true).toData())

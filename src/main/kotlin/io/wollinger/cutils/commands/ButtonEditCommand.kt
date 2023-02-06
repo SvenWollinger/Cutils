@@ -50,7 +50,8 @@ object ButtonEditCommandSlash: SlashCommand {
 
     override fun getCommandData() = Commands.slash(label, "Edit buttons of a message").also {
         it.isGuildOnly = true
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.adminOnly()
+        
         it.addSubcommands(
             SubcommandData.fromData(OptionData(OptionType.STRING, "view", "View buttons", true).toData())
                 .addOption(OptionType.STRING, "message-id", "Message ID", true)

@@ -16,7 +16,7 @@ object SayCommand: SlashCommand {
     }
 
     override fun getCommandData() = Commands.slash(label, "Say something as the bot").also {
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.adminOnly()
         it.addOption(OptionType.STRING, "text", "What you want to say", true)
     }
 }

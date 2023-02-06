@@ -1,12 +1,15 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.CutilsBot
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 object CommandManager: ListenerAdapter() {
     private val commands = HashMap<String, Interactable>().also {
@@ -35,3 +38,6 @@ object CommandManager: ListenerAdapter() {
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(event)
     override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(event)
 }
+
+fun SlashCommandData.adminOnly() = run { defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR) }
+fun CommandData.adminOnly() = run { defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR) }

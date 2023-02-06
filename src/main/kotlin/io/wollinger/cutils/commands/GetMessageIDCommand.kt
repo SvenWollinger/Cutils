@@ -15,6 +15,6 @@ object GetMessageIDCommandContext: ContextMessageCommand {
     }
 
     override fun getCommandData() = Commands.context(Command.Type.MESSAGE, name).also {
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.adminOnly()
     }
 }

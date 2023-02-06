@@ -36,7 +36,7 @@ object ReactionRoleCommandSlash: SlashCommand {
 
     override fun getCommandData() = Commands.slash(label, "Add a role reaction").also {
         it.isGuildOnly = true
-        it.defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)
+        it.adminOnly()
         it.addOption(OptionType.STRING, "message-id", "Message to add to", true)
         it.addOption(OptionType.STRING, "emoji", "Emoji to use", true)
         it.addOption(OptionType.ROLE, "role", "Role to add", true)
