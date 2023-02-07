@@ -1,9 +1,6 @@
 package io.wollinger.cutils.utils
 
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
-import java.time.ZoneId
+import java.time.*
 
 object TimeUtils {
     fun getUnixTime() = Instant.now().epochSecond
@@ -21,5 +18,6 @@ enum class TimestampType(private val sign: String) {
     fun formatNow() = format(TimeUtils.getUnixTime())
     fun format(time: OffsetDateTime?) = if (time == null) format(0) else format(time.toEpochSecond())
     fun format(time: LocalDateTime) = format(time.atZone(ZoneId.systemDefault()).toEpochSecond())
+    fun format(time: ZonedDateTime) = format(time.toEpochSecond())
     fun format(unixTime: Long) = "<t:$unixTime:$sign>"
 }

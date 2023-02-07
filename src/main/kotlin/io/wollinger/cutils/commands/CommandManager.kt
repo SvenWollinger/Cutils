@@ -3,6 +3,7 @@ package io.wollinger.cutils.commands
 import io.wollinger.cutils.CutilsBot
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -21,6 +22,7 @@ object CommandManager: ListenerAdapter() {
         it[SayCommand.label] = SayCommand
         it[ButtonEditCommandSlash.label] = ButtonEditCommandSlash
         it[GetMessageIDCommandContext.name] = GetMessageIDCommandContext
+        it[BirthdayCommandSlash.label] = BirthdayCommandSlash
     }
 
     fun register() {
@@ -37,6 +39,10 @@ object CommandManager: ListenerAdapter() {
     override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(event)
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(event)
     override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(event)
+    override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
+        val cmd = commands[event.name]
+        if(cmd != null && cmd is AutoCompleter) cmd.onAutoComplete(event)
+    }
 }
 
 fun SlashCommandData.adminOnly() = run { defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR) }
