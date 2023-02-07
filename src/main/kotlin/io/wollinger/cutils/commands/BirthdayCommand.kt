@@ -1,5 +1,6 @@
 package io.wollinger.cutils.commands
 
+import io.wollinger.cutils.server.Server
 import io.wollinger.cutils.utils.TimestampType
 import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -22,7 +23,7 @@ import java.util.TimeZone
 object BirthdayCommandSlash: SlashCommand, AutoCompleter {
     override val label = "birthday"
 
-    override fun run(event: SlashCommandInteractionEvent) {
+    override fun run(server: Server, event: SlashCommandInteractionEvent) {
         val timeZone = event.getOption("timezone")!!.asString
         val day = event.getOption("day")!!.asString
         val month = event.getOption("month")!!.asString
@@ -31,8 +32,8 @@ object BirthdayCommandSlash: SlashCommand, AutoCompleter {
         try {
             val zone = ZoneId.of(timeZone)
             try {
-                val date = ZonedDateTime.of(LocalDateTime.of(year.toInt(), month.toInt(), day.toInt(), 0, 0), zone).toLocalDateTime()
-                //TODO: Save this data
+                val date = ZonedDateTime.of(LocalDateTime.of(year.toInt(), month.toInt(), day.toInt(), 0, 0), zone)
+                server.userManager.getUserData(event.user.id).birthdayUnix = date.toEpochSecond()
                 event.queueReply("Set birthday to: ${TimestampType.LONG_DATE.format(date)}", true)
             } catch (_: Exception) {
                 event.queueReply("Bad date!", true)
@@ -56,7 +57,7 @@ object BirthdayCommandSlash: SlashCommand, AutoCompleter {
         it.addSubcommands(SubcommandData.fromData(OptionData(OptionType.STRING, "remove", "Remove birthday data", true).toData()))
     }
 
-    override fun onAutoComplete(event: CommandAutoCompleteInteractionEvent) {
+    override fun onAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent) {
         val currentInput = event.getOption("timezone")!!.asString
         val options = TimeZone.getAvailableIDs()
         event.replyChoiceStrings(options.filter { it.contains(currentInput) }.take(25)).queue()

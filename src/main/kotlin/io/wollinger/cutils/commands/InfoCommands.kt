@@ -1,5 +1,6 @@
 package io.wollinger.cutils.commands
 
+import io.wollinger.cutils.server.Server
 import io.wollinger.cutils.utils.TimestampType
 import io.wollinger.cutils.utils.UserUtils
 import io.wollinger.cutils.utils.queueReply
@@ -29,7 +30,7 @@ private fun getInfoMessage(member: Member): String {
 object InfoCommandSlash: SlashCommand {
     override val label = "info"
 
-    override fun run(event: SlashCommandInteractionEvent) {
+    override fun run(server: Server, event: SlashCommandInteractionEvent) {
         val input = event.getOption("user-id")!!.asString
 
         if(input.toLongOrNull() == null) {
@@ -52,7 +53,7 @@ object InfoCommandSlash: SlashCommand {
 object InfoCommandContext: ContextUserCommand {
     override val name = "Get User info"
 
-    override fun run(event: UserContextInteractionEvent) = event.queueReply(getInfoMessage(event.targetMember!!))
+    override fun run(server: Server, event: UserContextInteractionEvent) = event.queueReply(getInfoMessage(event.targetMember!!))
 
     override fun getCommandData() = Commands.context(Command.Type.USER, name).also {
         it.isGuildOnly = true

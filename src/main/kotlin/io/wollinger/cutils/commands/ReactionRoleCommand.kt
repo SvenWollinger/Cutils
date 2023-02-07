@@ -1,5 +1,6 @@
 package io.wollinger.cutils.commands
 
+import io.wollinger.cutils.server.Server
 import io.wollinger.cutils.utils.MessageUtils
 import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.Permission
@@ -12,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 object ReactionRoleCommandSlash: SlashCommand {
     override val label = "rr"
 
-    override fun run(event: SlashCommandInteractionEvent) {
+    override fun run(server: Server, event: SlashCommandInteractionEvent) {
         val messageID = event.getOption("message-id")!!.asString
         val emoji = Emoji.fromFormatted(event.getOption("emoji")!!.asString)
         val role = event.getOption("role")!!.asRole

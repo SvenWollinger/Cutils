@@ -35,13 +35,13 @@ object CommandManager: ListenerAdapter() {
         }
     }
 
-    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (commands[event.name] as SlashCommand).run(event)
-    override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(event)
-    override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(event)
-    override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(event)
+    override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (commands[event.name] as SlashCommand).run(CutilsBot.getServer(event.guild!!.id), event)
+    override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(CutilsBot.getServer(event.guild!!.id), event)
+    override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(CutilsBot.getServer(event.guild!!.id), event)
+    override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(CutilsBot.getServer(event.guild!!.id), event)
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
         val cmd = commands[event.name]
-        if(cmd != null && cmd is AutoCompleter) cmd.onAutoComplete(event)
+        if(cmd != null && cmd is AutoCompleter) cmd.onAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
     }
 }
 

@@ -1,6 +1,7 @@
 package io.wollinger.cutils.commands
 
 import io.wollinger.cutils.CutilsBot
+import io.wollinger.cutils.server.Server
 import io.wollinger.cutils.utils.MessageUtils
 import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.Permission
@@ -88,7 +89,7 @@ object ButtonRoleCommandSlash: SlashCommand {
         })
     }
 
-    override fun run(event: SlashCommandInteractionEvent) {
+    override fun run(server: Server, event: SlashCommandInteractionEvent) {
         when(event.subcommandName) {
             "add" -> add(event)
             "remove" -> remove(event)

@@ -52,6 +52,8 @@ object CutilsBot {
         CommandManager.register()
     }
 
+    fun getServer(id: String) = servers[id]!!
+
     val id: String get() = jda.selfUser.id
 }
 
