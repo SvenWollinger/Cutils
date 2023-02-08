@@ -5,19 +5,14 @@ import io.wollinger.cutils.utils.TimestampType
 import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 import java.lang.Exception
 import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.time.temporal.TemporalAdjuster
-import java.time.temporal.TemporalAdjusters
 import java.util.TimeZone
 
 object BirthdayCommandSlash: SlashCommand, AutoCompleter {
@@ -49,17 +44,37 @@ object BirthdayCommandSlash: SlashCommand, AutoCompleter {
         it.addSubcommands(
             SubcommandData.fromData(OptionData(OptionType.STRING, "set", "Set birthday", true).toData())
                 .addOption(OptionType.STRING, "timezone", "Timezone (eg. \"Europe/Berlin\")", true, true)
-                .addOption(OptionType.STRING, "day", "Day", true)
-                .addOption(OptionType.STRING, "month", "Month", true)
-                .addOption(OptionType.STRING, "year", "Year", true)
+                .addOption(OptionType.STRING, "day", "Day", true, true)
+                .addOption(OptionType.STRING, "month", "Month", true, true)
+                .addOption(OptionType.STRING, "year", "Year", true, true)
         )
 
         it.addSubcommands(SubcommandData.fromData(OptionData(OptionType.STRING, "remove", "Remove birthday data", true).toData()))
     }
 
     override fun onAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent) {
-        val currentInput = event.getOption("timezone")!!.asString
-        val options = TimeZone.getAvailableIDs()
-        event.replyChoiceStrings(options.filter { it.contains(currentInput) }.take(25)).queue()
+        val currentInput = event.getOption(event.focusedOption.name)!!.asString
+        when(event.focusedOption.name) {
+            "timezone" -> {
+                val options = TimeZone.getAvailableIDs()
+                event.replyChoiceStrings(options.filter { it.lowercase().contains(currentInput.lowercase()) }.take(25)).queue()
+            }
+            "day" -> {
+                val intArray = (1..31).toList().filter { it.toString().contains(currentInput) }.take(25)
+                val choices = Array(intArray.size) { if(intArray[it] > 9) intArray[it].toString() else "0${intArray[it]}" }
+                event.replyChoiceStrings(*choices).queue()
+            }
+            "month" -> {
+                val intArray = (1..12).toList().filter { it.toString().contains(currentInput) }.take(25)
+                val choices = Array(intArray.size) { if(intArray[it] > 9) intArray[it].toString() else "0${intArray[it]}" }
+                event.replyChoiceStrings(*choices).queue()
+            }
+            "year" -> {
+                val currentYear = LocalDateTime.now().year - 8 //TODO: Set this to a config value
+                val intArray = (currentYear - 80..currentYear).toList().filter { it.toString().contains(currentInput) }.reversed().take(25)
+                val choices = Array(intArray.size) { intArray[it].toString() }
+                event.replyChoiceStrings(*choices).queue()
+            }
+        }
     }
 }
