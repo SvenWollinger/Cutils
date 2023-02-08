@@ -65,9 +65,9 @@ object BirthdayCommandSlash: SlashCommand, AutoCompleter {
                 event.replyChoiceStrings(*choices).queue()
             }
             "month" -> {
-                val intArray = (1..12).toList().filter { it.toString().contains(currentInput) }.take(25)
+                val intArray = (1..12).toList()
                 val choices = Array(intArray.size) { if(intArray[it] > 9) intArray[it].toString() else "0${intArray[it]}" }
-                event.replyChoiceStrings(*choices).queue()
+                event.replyChoiceStrings(choices.filter { it.contains(currentInput) }).queue()
             }
             "year" -> {
                 val currentYear = LocalDateTime.now().year - 8 //TODO: Set this to a config value

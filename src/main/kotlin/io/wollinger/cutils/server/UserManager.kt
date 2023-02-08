@@ -4,7 +4,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
 
 data class UserData(
-    var birthdayUnix: Long = -1
+    var birthdayUnix: Long = -1,
+    var pronouns: HashMap<String, Int> = HashMap()
 )
 
 class UserManager(server: Server) {

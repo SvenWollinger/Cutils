@@ -23,6 +23,8 @@ object CommandManager: ListenerAdapter() {
         it[ButtonEditCommandSlash.label] = ButtonEditCommandSlash
         it[GetMessageIDCommandContext.name] = GetMessageIDCommandContext
         it[BirthdayCommandSlash.label] = BirthdayCommandSlash
+        it[PronounCommandSlash.label] = PronounCommandSlash
+        it[PronounCommandContext.name] = PronounCommandContext
     }
 
     fun register() {
