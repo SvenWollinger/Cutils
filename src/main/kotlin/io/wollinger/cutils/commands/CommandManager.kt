@@ -15,7 +15,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 object CommandManager: ListenerAdapter() {
     private val commands: Array<BaseCommand> = arrayOf(
         AvatarCommand,
-        SayCommand
+        SayCommand,
+        PronounCommand
     )
     private val registered = HashMap<String, BaseCommand>()
 
@@ -40,7 +41,7 @@ object CommandManager: ListenerAdapter() {
         val cmd = registered[event.name]
         if(cmd != null && cmd is UserContextAdapter) cmd.onUserContext(CutilsBot.getServer(event.guild!!.id), event)
     }
-    
+
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
         val cmd = registered[event.name]
         if(cmd != null && cmd is MessageContextAdapter) cmd.onMessageContext(CutilsBot.getServer(event.guild!!.id), event)
