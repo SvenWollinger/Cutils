@@ -6,18 +6,11 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 interface BaseCommand {
     fun register(): Array<CommandData>
-}
-
-interface CommandAutoCompleteAdapter {
-    fun onCommandAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent)
-}
-
-interface ModalListenerAdapter {
-    fun onModalInteraction(server: Server, event: ModalInteractionEvent)
 }
 
 interface SlashCommandAdapter {
@@ -33,4 +26,16 @@ interface UserContextAdapter {
 interface MessageContextAdapter {
     val messageContextLabel: String
     fun onMessageContext(server: Server, event: MessageContextInteractionEvent)
+}
+
+interface CommandAutoCompleteAdapter {
+    fun onCommandAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent)
+}
+
+interface ModalListenerAdapter {
+    fun onModalInteraction(server: Server, event: ModalInteractionEvent)
+}
+
+interface ButtonListenerAdapter {
+    fun onButtonInteraction(server: Server, event: ButtonInteractionEvent)
 }

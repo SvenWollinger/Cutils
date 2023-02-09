@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -60,9 +61,15 @@ object CommandManager: ListenerAdapter() {
         val cmd = registered[event.name]
         if(cmd != null && cmd is CommandAutoCompleteAdapter) cmd.onCommandAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
     }
+
     override fun onModalInteraction(event: ModalInteractionEvent) {
         val cmd = registered[event.modalId.split("_")[0]]
         if(cmd != null && cmd is ModalListenerAdapter) cmd.onModalInteraction(CutilsBot.getServer(event.guild!!.id), event)
+    }
+
+    override fun onButtonInteraction(event: ButtonInteractionEvent) {
+        val cmd = registered[event.id.split("_")[0]]
+        if(cmd != null && cmd is ButtonListenerAdapter) cmd.onButtonInteraction(CutilsBot.getServer(event.guild!!.id), event)
     }
 }
 
