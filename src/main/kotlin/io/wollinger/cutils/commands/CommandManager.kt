@@ -19,7 +19,8 @@ object CommandManager: ListenerAdapter() {
         SayCommand,
         PronounCommand,
         InfoCommand,
-        BirthdayCommand
+        BirthdayCommand,
+        MessageIDCommand
     )
 
     //Registered Commands (labels/names as keys)
