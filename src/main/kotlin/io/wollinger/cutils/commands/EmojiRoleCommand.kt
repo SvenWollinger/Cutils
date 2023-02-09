@@ -25,7 +25,7 @@ object EmojiRoleCommand: BaseCommand, SlashCommandAdapter {
         MessageUtils.findMessage(event.guild!!, messageID, {
             it.addReaction(emoji).queue({
                 event.queueReply("Done!", true)
-                //TODO: Add emoji to database
+                server.rmm.addReaction(messageID, emoji.toString(), role.id)
             }, {
                 event.queueReply("Could not add emoji. (Bad emoji?)", true)
             })
