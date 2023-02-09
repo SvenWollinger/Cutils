@@ -21,7 +21,8 @@ object CommandManager: ListenerAdapter() {
         InfoCommand,
         BirthdayCommand,
         MessageIDCommand,
-        EditButtonCommand
+        EditButtonCommand,
+        ButtonRoleCommand
     )
 
     //Registered Commands (labels/names as keys)
