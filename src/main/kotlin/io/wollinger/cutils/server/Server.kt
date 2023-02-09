@@ -1,6 +1,7 @@
 package io.wollinger.cutils.server
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.wollinger.cutils.CutilsBot
 import net.dv8tion.jda.api.entities.Guild
 import java.io.File
 
@@ -8,10 +9,10 @@ data class ServerConfig(
     var cmdPrefix: String = "!"
 )
 
-class Server(val guild: Guild) {
+class Server(guild: Guild) {
     private val id = guild.id
     private val config: ServerConfig
-    private val rmm: ReactionRoleManager
+    val rmm: ReactionRoleManager
     val userManager: UserManager
     val serverFolder = File("servers/$id/")
 
@@ -20,6 +21,7 @@ class Server(val guild: Guild) {
         serverFolder.mkdirs()
         rmm = ReactionRoleManager(this)
         userManager = UserManager(this)
+        CutilsBot.jda.addEventListener(rmm)
         File(serverFolder, "config.json").also {
             config = if(it.exists()) ObjectMapper().readValue(it, ServerConfig::class.java) else ServerConfig()
             ObjectMapper().writeValue(it, config)
