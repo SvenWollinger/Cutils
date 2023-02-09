@@ -1,6 +1,5 @@
 package io.wollinger.cutils.utils
 
-import io.wollinger.cutils.commands.ButtonRoleCommandSlash
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent

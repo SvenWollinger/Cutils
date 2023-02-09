@@ -8,29 +8,30 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
-interface Interactable {
-    fun getCommandData(): CommandData?
+interface BaseCommand {
+    val id: String
+    fun register(): Array<CommandData>
 }
 
-interface AutoCompleteListener {
-    fun onAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent)
+interface CommandAutoCompleteAdapter {
+    fun onCommandAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent)
 }
 
-interface ModalListener {
-    fun onModal(server: Server, event: ModalInteractionEvent)
+interface ModalListenerAdapter {
+    fun onModalInteraction(server: Server, event: ModalInteractionEvent)
 }
 
-interface SlashCommand: Interactable {
-    val label: String
-    fun run(server: Server, event: SlashCommandInteractionEvent)
+interface SlashCommandAdapter {
+    val slashCommandLabel: String
+    fun onSlashCommand(server: Server, event: SlashCommandInteractionEvent)
 }
 
-interface ContextUserCommand: Interactable {
-    val name: String
-    fun run(server: Server, event: UserContextInteractionEvent)
+interface UserContextAdapter {
+    val userContextLabel: String
+    fun onUserContext(server: Server, event: UserContextInteractionEvent)
 }
 
-interface ContextMessageCommand: Interactable {
-    val name: String
-    fun run(server: Server, event: MessageContextInteractionEvent)
+interface MessageContextAdapter {
+    val messageContextLabel: String
+    fun onMessageContext(server: Server, event: MessageContextInteractionEvent)
 }
