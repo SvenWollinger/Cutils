@@ -13,11 +13,15 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 object CommandManager: ListenerAdapter() {
+    //Loaded commands
     private val commands: Array<BaseCommand> = arrayOf(
         AvatarCommand,
         SayCommand,
-        PronounCommand
+        PronounCommand,
+        InfoCommand
     )
+
+    //Registered Commands (labels/names as keys)
     private val registered = HashMap<String, BaseCommand>()
 
     fun register() {
