@@ -68,7 +68,7 @@ object CommandManager: ListenerAdapter() {
     }
 
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
-        val cmd = registered[event.id.split("_")[0]]
+        val cmd = registered[event.button.id!!.split("_")[0]]
         if(cmd != null && cmd is ButtonListenerAdapter) cmd.onButtonInteraction(CutilsBot.getServer(event.guild!!.id), event)
     }
 }

@@ -6,6 +6,7 @@ import io.wollinger.cutils.utils.MessageUtils
 import io.wollinger.cutils.utils.queueReply
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -15,11 +16,11 @@ import net.dv8tion.jda.api.interactions.components.ItemComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 
-object ButtonRoleCommand: BaseCommand, SlashCommandAdapter {
+object ButtonRoleCommand: BaseCommand, SlashCommandAdapter, ButtonListenerAdapter {
     override val slashCommandLabel = "buttonrole"
 
-    private fun toButtonID(roleID: String) = "cutils-buttonrole-$roleID"
-    private fun toRoleID(buttonID: String) = buttonID.split("-")[2]
+    private fun toButtonID(roleID: String) = "${slashCommandLabel}_$roleID"
+    private fun toRoleID(buttonID: String) = buttonID.split("_")[1]
 
     private fun add(event: SlashCommandInteractionEvent) {
         val messageID = event.getOption("message-id")!!.asString
@@ -92,6 +93,23 @@ object ButtonRoleCommand: BaseCommand, SlashCommandAdapter {
         when(event.subcommandName) {
             "add" -> add(event)
             "remove" -> remove(event)
+        }
+    }
+
+    override fun onButtonInteraction(server: Server, event: ButtonInteractionEvent) {
+        val role = event.guild!!.getRoleById(toRoleID(event.button.id!!))
+        if(role == null) {
+            event.reply("Role not found! Ask your local admin: ```${event.button.id}```")
+            return
+        }
+        val guild = event.guild!!
+        val member = event.member!!
+        if(member.roles.contains(role)) {
+            guild.removeRoleFromMember(member, role).queue()
+            event.reply("Role removed.").setEphemeral(true).queue()
+        } else {
+            guild.addRoleToMember(member, role).queue()
+            event.reply("Role added.").setEphemeral(true).queue()
         }
     }
 
