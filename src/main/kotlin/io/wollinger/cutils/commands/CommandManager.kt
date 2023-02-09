@@ -40,10 +40,13 @@ object CommandManager: ListenerAdapter() {
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent): Unit = (commands[event.name] as SlashCommand).run(CutilsBot.getServer(event.guild!!.id), event)
     override fun onUserContextInteraction(event: UserContextInteractionEvent): Unit = (commands[event.name] as ContextUserCommand).run(CutilsBot.getServer(event.guild!!.id), event)
     override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(CutilsBot.getServer(event.guild!!.id), event)
-    override fun onModalInteraction(event: ModalInteractionEvent): Unit = (commands[event.modalId] as ModalInteractionCommand).run(CutilsBot.getServer(event.guild!!.id), event)
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
         val cmd = commands[event.name]
-        if(cmd != null && cmd is AutoCompleter) cmd.onAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
+        if(cmd != null && cmd is AutoCompleteListener) cmd.onAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
+    }
+    override fun onModalInteraction(event: ModalInteractionEvent) {
+        val cmd = commands[event.modalId.split("_")[0]]
+        if(cmd != null && cmd is ModalListener) cmd.onModal(CutilsBot.getServer(event.guild!!.id), event)
     }
 }
 

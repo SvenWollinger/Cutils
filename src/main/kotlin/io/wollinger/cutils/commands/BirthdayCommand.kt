@@ -15,7 +15,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.TimeZone
 
-object BirthdayCommandSlash: SlashCommand, AutoCompleter {
+object BirthdayCommandSlash: SlashCommand, AutoCompleteListener {
     override val label = "birthday"
 
     override fun run(server: Server, event: SlashCommandInteractionEvent) {

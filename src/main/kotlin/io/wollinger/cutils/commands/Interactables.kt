@@ -12,8 +12,12 @@ interface Interactable {
     fun getCommandData(): CommandData?
 }
 
-interface AutoCompleter {
+interface AutoCompleteListener {
     fun onAutoComplete(server: Server, event: CommandAutoCompleteInteractionEvent)
+}
+
+interface ModalListener {
+    fun onModal(server: Server, event: ModalInteractionEvent)
 }
 
 interface SlashCommand: Interactable {
@@ -29,9 +33,4 @@ interface ContextUserCommand: Interactable {
 interface ContextMessageCommand: Interactable {
     val name: String
     fun run(server: Server, event: MessageContextInteractionEvent)
-}
-
-interface ModalInteractionCommand: Interactable {
-    val id: String
-    fun run(server: Server, event: ModalInteractionEvent)
 }

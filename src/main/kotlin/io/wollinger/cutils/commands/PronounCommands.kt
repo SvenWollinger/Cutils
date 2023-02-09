@@ -30,7 +30,7 @@ object PronounCommandContext: ContextUserCommand {
     override fun getCommandData() = Commands.context(Command.Type.USER, name).also { it.isGuildOnly = true }
 }
 
-object PronounCommandSlash: SlashCommand, AutoCompleter {
+object PronounCommandSlash: SlashCommand, AutoCompleteListener {
     override val label = "pronouns"
     private val pronouns = listOf(
         "Any/All",
