@@ -11,9 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 
 object AvatarCommand: BaseCommand, SlashCommandAdapter, UserContextAdapter {
-    override val id = "avatar"
     override val userContextLabel = "Get User avatar"
-    override val slashCommandLabel = id
+    override val slashCommandLabel = "avatar"
 
     private fun get(member: Member) = """
         Server avatar: ${UserUtils.getServerAvatarURL(member) ?: "Not set"}

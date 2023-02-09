@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 
 interface BaseCommand {
-    val id: String
     fun register(): Array<CommandData>
 }
 

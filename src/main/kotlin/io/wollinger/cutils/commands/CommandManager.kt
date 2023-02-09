@@ -13,8 +13,9 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 
 object CommandManager: ListenerAdapter() {
-    private val commands = arrayOf(
-        AvatarCommand
+    private val commands: Array<BaseCommand> = arrayOf(
+        AvatarCommand,
+        SayCommand
     )
     private val registered = HashMap<String, BaseCommand>()
 
@@ -39,17 +40,20 @@ object CommandManager: ListenerAdapter() {
         val cmd = registered[event.name]
         if(cmd != null && cmd is UserContextAdapter) cmd.onUserContext(CutilsBot.getServer(event.guild!!.id), event)
     }
+    
+    override fun onMessageContextInteraction(event: MessageContextInteractionEvent) {
+        val cmd = registered[event.name]
+        if(cmd != null && cmd is MessageContextAdapter) cmd.onMessageContext(CutilsBot.getServer(event.guild!!.id), event)
+    }
 
-    /*
-    override fun onMessageContextInteraction(event: MessageContextInteractionEvent): Unit = (commands[event.name] as ContextMessageCommand).run(CutilsBot.getServer(event.guild!!.id), event)
     override fun onCommandAutoCompleteInteraction(event: CommandAutoCompleteInteractionEvent) {
-        val cmd = commands[event.name]
-        if(cmd != null && cmd is AutoCompleteListener) cmd.onAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
+        val cmd = registered[event.name]
+        if(cmd != null && cmd is CommandAutoCompleteAdapter) cmd.onCommandAutoComplete(CutilsBot.getServer(event.guild!!.id), event)
     }
     override fun onModalInteraction(event: ModalInteractionEvent) {
-        val cmd = commands[event.modalId.split("_")[0]]
-        if(cmd != null && cmd is ModalListener) cmd.onModal(CutilsBot.getServer(event.guild!!.id), event)
-    }*/
+        val cmd = registered[event.modalId.split("_")[0]]
+        if(cmd != null && cmd is ModalListenerAdapter) cmd.onModalInteraction(CutilsBot.getServer(event.guild!!.id), event)
+    }
 }
 
 fun SlashCommandData.adminOnly() = run { defaultPermissions = DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR) }
