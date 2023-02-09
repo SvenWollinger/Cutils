@@ -1,6 +1,10 @@
 package io.wollinger.cutils.server
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.wollinger.cutils.CutilsBot
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.io.File
 
 data class ReactionMessageDTO(
@@ -13,7 +17,7 @@ data class ReactionRoleDTO(
     val roleID: String
 )
 
-class ReactionRoleManager(server: Server) {
+class ReactionRoleManager(server: Server): ListenerAdapter() {
     private val messages = HashMap<String, ReactionMessageDTO>()
     private val folder = File(server.serverFolder, "reactionroles")
 
@@ -36,6 +40,28 @@ class ReactionRoleManager(server: Server) {
         folder.listFiles()?.forEach {
             val dto = jacksonObjectMapper().readValue(it, ReactionMessageDTO::class.java)
             messages[dto.messageID] = dto
+        }
+    }
+
+    override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
+        if(event.user!!.id == CutilsBot.jda.selfUser.id) return
+
+        messages[event.messageId]!!.reactions.forEach {
+            if(it.emoji == event.emoji.toString()) {
+                event.guild.addRoleToMember(event.member!!, event.guild.getRoleById(it.roleID)!!).queue()
+                return
+            }
+        }
+    }
+
+    override fun onMessageReactionRemove(event: MessageReactionRemoveEvent) {
+        if(event.user!!.id == CutilsBot.jda.selfUser.id) return
+
+        messages[event.messageId]!!.reactions.forEach {
+            if(it.emoji == event.emoji.toString()) {
+                event.guild.removeRoleFromMember(event.member!!, event.guild.getRoleById(it.roleID)!!).queue()
+                return
+            }
         }
     }
 }
