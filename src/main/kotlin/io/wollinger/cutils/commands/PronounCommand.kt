@@ -13,16 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
 
-private fun view(server: Server, member: Member): String {
-    val data = server.userManager.getUserData(member.id).pronouns
-    if(data.isEmpty()) return "${member.effectiveName} has no pronouns set."
-    var response = "${member.effectiveName}'s Pronouns: (Use in ascending order)\n"
-    data.toList().sortedBy { (_, index) -> index}.forEach { (pronoun, _) ->
-        response += "$pronoun\n"
-    }
-    return response
-}
-
 object PronounCommand: BaseCommand, SlashCommandAdapter, UserContextAdapter, CommandAutoCompleteAdapter {
     override val userContextLabel = "View Pronouns"
     override val slashCommandLabel = "pronouns"
@@ -35,6 +25,16 @@ object PronounCommand: BaseCommand, SlashCommandAdapter, UserContextAdapter, Com
         "Undecided",
         "Ask"
     )
+
+    private fun view(server: Server, member: Member): String {
+        val data = server.userManager.getUserData(member.id).pronouns
+        if(data.isEmpty()) return "${member.effectiveName} has no pronouns set."
+        var response = "${member.effectiveName}'s Pronouns: (Use in ascending order)\n"
+        data.toList().sortedBy { (_, index) -> index}.forEach { (pronoun, _) ->
+            response += "$pronoun\n"
+        }
+        return response
+    }
 
     override fun onUserContext(server: Server, event: UserContextInteractionEvent) = event.queueReply(view(server, event.targetMember!!), true)
 
