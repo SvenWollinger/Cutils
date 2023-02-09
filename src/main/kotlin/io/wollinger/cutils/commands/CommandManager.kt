@@ -24,7 +24,8 @@ object CommandManager: ListenerAdapter() {
         MessageIDCommand,
         EditButtonCommand,
         ButtonRoleCommand,
-        EmojiRoleCommand
+        EmojiRoleCommand,
+        EditMessageCommand
     )
 
     //Registered Commands (labels/names as keys)
