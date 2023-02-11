@@ -28,7 +28,7 @@ object MessageUtils {
         }
     }
 
-    fun removeButton(message: Message, buttonID: String, onSuccess: () -> (Unit), onFailure: () -> (Unit)) {
+    fun removeButton(message: Message, buttonID: String, onSuccess: () -> (Unit), onFailure: (Throwable) -> (Unit)) {
         val components = CopyOnWriteArrayList<LayoutComponent>()
         message.components.forEach { components.add(it) }
 
@@ -40,6 +40,10 @@ object MessageUtils {
                         buttons.remove(btn)
                         components.remove(component)
                         if(buttons.isNotEmpty()) components.add(ActionRow.of(buttons))
+                        if(components.isEmpty() && message.contentRaw.isEmpty()) {
+                            onFailure.invoke(Exception("Message can not be empty"))
+                            return
+                        }
                         message.editMessageComponents(components).queue()
                         onSuccess.invoke()
                         return
@@ -47,7 +51,7 @@ object MessageUtils {
                 }
             }
         }
-        onFailure.invoke()
+        onFailure.invoke(Exception("Button not found."))
     }
 }
 
