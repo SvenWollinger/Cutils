@@ -10,7 +10,7 @@ data class ServerConfig(
 )
 
 class Server(guild: Guild) {
-    private val id = guild.id
+    val id = guild.id
     private val config: ServerConfig
     val rmm: ReactionRoleManager
     val userManager: UserManager

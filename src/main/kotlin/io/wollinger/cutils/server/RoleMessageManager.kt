@@ -17,7 +17,7 @@ data class ReactionRoleDTO(
     val roleID: String
 )
 
-class ReactionRoleManager(server: Server): ListenerAdapter() {
+class ReactionRoleManager(private val server: Server): ListenerAdapter() {
     private val messages = HashMap<String, ReactionMessageDTO>()
     private val folder = File(server.serverFolder, "reactionroles")
 
@@ -38,13 +38,13 @@ class ReactionRoleManager(server: Server): ListenerAdapter() {
 
     fun load() {
         folder.listFiles()?.forEach {
-            val dto = jacksonObjectMapper().readValue(it, ReactionMessageDTO::class.java)
-            messages[dto.messageID] = dto
+            jacksonObjectMapper().readValue(it, ReactionMessageDTO::class.java).also { dto -> messages[dto.messageID] = dto }
         }
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
         if(event.user!!.id == CutilsBot.jda.selfUser.id) return
+        if(event.guild.id != server.id) return
 
         messages[event.messageId]!!.reactions.forEach {
             if(it.emoji == event.emoji.toString()) {
@@ -56,6 +56,7 @@ class ReactionRoleManager(server: Server): ListenerAdapter() {
 
     override fun onMessageReactionRemove(event: MessageReactionRemoveEvent) {
         if(event.user!!.id == CutilsBot.jda.selfUser.id) return
+        if(event.guild.id != server.id) return
 
         messages[event.messageId]!!.reactions.forEach {
             if(it.emoji == event.emoji.toString()) {
