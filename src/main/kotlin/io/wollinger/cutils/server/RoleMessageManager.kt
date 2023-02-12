@@ -47,7 +47,6 @@ class ReactionRoleManager(private val server: Server) {
     }
 
     fun onReaction(member: Member, messageID: String, isAdded: Boolean, emoji: Emoji, guild: Guild) {
-        println("oi")
         messages[messageID]?.reactions?.forEach {
             if(it.emoji == emoji.toString()) {
                 if(isAdded) guild.addRoleToMember(member, guild.getRoleById(it.roleID)!!).queue()
