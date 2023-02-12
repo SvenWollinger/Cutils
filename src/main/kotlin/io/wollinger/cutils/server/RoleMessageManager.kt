@@ -2,6 +2,10 @@ package io.wollinger.cutils.server
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.wollinger.cutils.CutilsBot
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -17,7 +21,7 @@ data class ReactionRoleDTO(
     val roleID: String
 )
 
-class ReactionRoleManager(private val server: Server): ListenerAdapter() {
+class ReactionRoleManager(private val server: Server) {
     private val messages = HashMap<String, ReactionMessageDTO>()
     private val folder = File(server.serverFolder, "reactionroles")
 
@@ -42,25 +46,12 @@ class ReactionRoleManager(private val server: Server): ListenerAdapter() {
         }
     }
 
-    override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
-        if(event.user!!.id == CutilsBot.jda.selfUser.id) return
-        if(event.guild.id != server.id) return
-
-        messages[event.messageId]!!.reactions.forEach {
-            if(it.emoji == event.emoji.toString()) {
-                event.guild.addRoleToMember(event.member!!, event.guild.getRoleById(it.roleID)!!).queue()
-                return
-            }
-        }
-    }
-
-    override fun onMessageReactionRemove(event: MessageReactionRemoveEvent) {
-        if(event.user!!.id == CutilsBot.jda.selfUser.id) return
-        if(event.guild.id != server.id) return
-
-        messages[event.messageId]!!.reactions.forEach {
-            if(it.emoji == event.emoji.toString()) {
-                event.guild.removeRoleFromMember(event.member!!, event.guild.getRoleById(it.roleID)!!).queue()
+    fun onReaction(member: Member, messageID: String, isAdded: Boolean, emoji: Emoji, guild: Guild) {
+        println("oi")
+        messages[messageID]?.reactions?.forEach {
+            if(it.emoji == emoji.toString()) {
+                if(isAdded) guild.addRoleToMember(member, guild.getRoleById(it.roleID)!!).queue()
+                else guild.removeRoleFromMember(member, guild.getRoleById(it.roleID)!!).queue()
                 return
             }
         }

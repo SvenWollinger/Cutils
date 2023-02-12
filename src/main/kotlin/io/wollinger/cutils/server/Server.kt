@@ -21,7 +21,6 @@ class Server(guild: Guild) {
         serverFolder.mkdirs()
         rmm = ReactionRoleManager(this)
         userManager = UserManager(this)
-        CutilsBot.jda.addEventListener(rmm)
         File(serverFolder, "config.json").also {
             config = if(it.exists()) ObjectMapper().readValue(it, ServerConfig::class.java) else ServerConfig()
             ObjectMapper().writeValue(it, config)
